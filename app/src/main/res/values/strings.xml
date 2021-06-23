@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MaskMap</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="google_map_api_key">AIzaSyD33aAzfDAnHbJLY9LjM3O_BCgpEUybk-0</string>
+</resources>

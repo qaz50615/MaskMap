@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="110dp"
+        android:layout_height="30dp"
+        android:background="@drawable/colorinfo_green_outside"
+        android:gravity="center"
+        android:text="充足"
+        android:textColor="@android:color/white"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="110dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/colorinfo_blue_outside"
+        android:gravity="center"
+        android:text="趕快去"
+        android:textColor="@android:color/white"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="110dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/colorinfo_red_outside"
+        android:gravity="center"
+        android:text="要沒囉"
+        android:textColor="@android:color/white"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="110dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/colorinfo_grey_outside"
+        android:gravity="center"
+        android:text="賣完了"
+        android:textColor="@android:color/white"
+        android:textSize="16dp" />
+</LinearLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/all_marker"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:background="#FF5511"
+        android:textColor="#ffffff"
+        android:text="全部" />
+
+    <Button
+        android:id="@+id/adult_marker"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16dp"
+        android:background="#B94FFF"
+        android:textColor="#ffffff"
+        android:text="成人" />
+
+    <Button
+        android:id="@+id/child_marker"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="16dp"
+        android:background="#66DD00"
+        android:textColor="#ffffff"
+        android:text="兒童" />
+
+</LinearLayout>
