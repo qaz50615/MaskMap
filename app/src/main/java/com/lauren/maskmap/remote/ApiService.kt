@@ -1,4 +1,4 @@
-package com.lauren.maskmap.remote
+package com.lauren.MaskMap.remote
 
 import com.lauren.MaskMap.MaskDataGson
 import retrofit2.http.GET

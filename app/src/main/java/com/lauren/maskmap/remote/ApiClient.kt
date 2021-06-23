@@ -1,4 +1,4 @@
-package com.lauren.maskmap.remote
+package com.lauren.MaskMap.remote
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

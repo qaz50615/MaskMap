@@ -1,45 +1,31 @@
-package com.lauren.maskmap
+package com.lauren.MaskMap
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.net.Uri
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.lauren.MaskMap.MaskDataGson
-import com.lauren.maskmap.remote.ApiClient
-import com.lauren.maskmap.remote.ApiResult
-import com.lauren.maskmap.remote.ApiService
+import com.lauren.MaskMap.remote.ApiClient
+import com.lauren.MaskMap.remote.ApiResult
+import com.lauren.MaskMap.remote.ApiService
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.include_infodialog.*
 import kotlinx.android.synthetic.main.include_typechoose.*
@@ -47,17 +33,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.*
-import org.json.JSONException
-import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), LocationListener {
 
     private var mMap: GoogleMap? = null
     private var dataList: MaskDataGson? = null
-    private var mLatitude = 24.000000
-    private var mLongitude = 121.000000
     private val locationManager: LocationManager by lazy {
         getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
@@ -72,21 +52,16 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     }
 
-    @SuppressLint("MissingPermission")
     private fun initView() {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync{
-            mMap = it
-            mMap?.uiSettings?.isMyLocationButtonEnabled = true
-            mMap?.uiSettings?.isMapToolbarEnabled = false
-            mMap?.uiSettings?.isZoomControlsEnabled = true
-                val lastKnownLocation = locationManager.getLastKnownLocation(findBestProvider())
+        mapFragment.getMapAsync {
+            if (checkSelfPermission()) {
+                mMap = it
                 mMap?.isMyLocationEnabled = true
-                val lat = lastKnownLocation.latitude
-                val long = lastKnownLocation.longitude
-                mMap?.animateCamera(
-                    CameraUpdateFactory.newLatLngZoom(LatLng(lat, long), 16f)
-                )
+                mMap?.uiSettings?.isMapToolbarEnabled = false
+                mMap?.uiSettings?.isZoomControlsEnabled = true
+                locationProvider()
+            }
         }
 
         dialogClose.setOnClickListener {
@@ -190,18 +165,13 @@ class MainActivity : AppCompatActivity(), LocationListener {
     }
 
     private fun updateLocation(location: Location?) {
-        if (location != null) {
-            mLatitude = location.latitude
-            mLongitude = location.longitude
-            val myLocation = LatLng(mLatitude, mLongitude)
-            Log.i("location", "$mLatitude$mLongitude")
-            mMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16f))
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.GINGERBREAD)
-    private fun findBestProvider(): String? {
-        return locationManager.getBestProvider(Criteria(), true) // 選擇精準度最高的提供者
+        val myLocation = LatLng(location?.latitude?:23.9193026, location?.longitude?:120.6736842)
+        Log.i("location", "${location?.latitude?:23.9193026}${location?.longitude?:120.6736842}")
+        mMap?.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                myLocation, 15f
+            )
+        )
     }
 
     private fun isGpsEnable(): Boolean {
@@ -209,33 +179,15 @@ class MainActivity : AppCompatActivity(), LocationListener {
     }
 
     @SuppressLint("MissingPermission")
-    private fun startGPS() {
-        if (findBestProvider() != null) {
-            val myLocation = locationManager.getLastKnownLocation(findBestProvider())
-            updateLocation(myLocation)
-            locationManager.requestLocationUpdates(findBestProvider(), 0, 20f, this)
-        }
+    private fun moveToLocation() {
+        val myLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        updateLocation(myLocation)
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000,1f, this)
     }
-
-//    @RequiresApi(Build.VERSION_CODES.GINGERBREAD)
-//    private fun setCriteria(): Criteria {
-//        val criteria = Criteria()                    //資訊提供者選取標準
-//        criteria.accuracy = Criteria.ACCURACY_FINE  //设置定位精准度
-//        criteria.isAltitudeRequired = false          //是否要求海拔
-//        criteria.isBearingRequired = true           //是否要求方向
-//        criteria.isCostAllowed = false               //是否要求收费
-//        criteria.isSpeedRequired = true             //是否要求速度
-//        criteria.powerRequirement = Criteria.POWER_LOW      //设置相对省电
-//        criteria.bearingAccuracy = Criteria.ACCURACY_HIGH   //设置方向精确度
-//        criteria.speedAccuracy = Criteria.ACCURACY_HIGH     //设置速度精确度
-//        criteria.horizontalAccuracy = Criteria.ACCURACY_HIGH//设置水平方向精确度
-//        criteria.verticalAccuracy = Criteria.ACCURACY_HIGH  //设置垂直方向精确
-//        return criteria
-//    }
 
     private fun locationProvider() {
         if (isGpsEnable()) {
-            startGPS()
+            moveToLocation()
         } else {
             Toast.makeText(this, "請開啟高精確度定位模式", Toast.LENGTH_LONG).show()
         }
@@ -332,12 +284,12 @@ class MainActivity : AppCompatActivity(), LocationListener {
 
     private fun initData () {
         CoroutineScope(Dispatchers.Main).launch {
-            progressBar.visibility = View.VISIBLE
             when (fetchData()) {
                 is ApiResult.Success -> {
                     dataList = (fetchData() as ApiResult.Success).data
                     showAllMarker()
                     include_typechoose.visibility = View.VISIBLE
+                    if(swipe.isRefreshing) swipe.isRefreshing = false
                 }
                 is ApiResult.Error -> {
                     progressBar.visibility = View.INVISIBLE
