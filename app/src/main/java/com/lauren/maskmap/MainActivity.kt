@@ -15,6 +15,7 @@ import android.view.View
 import android.widget.Toast
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -55,13 +56,11 @@ class MainActivity : AppCompatActivity(), LocationListener {
     private fun initView() {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync {
-            if (checkSelfPermission()) {
-                mMap = it
-                mMap?.isMyLocationEnabled = true
-                mMap?.uiSettings?.isMapToolbarEnabled = false
-                mMap?.uiSettings?.isZoomControlsEnabled = true
-                locationProvider()
-            }
+            mMap = it
+            mMap?.isMyLocationEnabled = true
+            mMap?.uiSettings?.isMapToolbarEnabled = false
+            mMap?.uiSettings?.isZoomControlsEnabled = true
+//            updateLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER))
         }
 
         dialogClose.setOnClickListener {
@@ -178,16 +177,9 @@ class MainActivity : AppCompatActivity(), LocationListener {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
-    @SuppressLint("MissingPermission")
-    private fun moveToLocation() {
-        val myLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        updateLocation(myLocation)
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000,1f, this)
-    }
-
     private fun locationProvider() {
         if (isGpsEnable()) {
-            moveToLocation()
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000,0f, this)
         } else {
             Toast.makeText(this, "請開啟高精確度定位模式", Toast.LENGTH_LONG).show()
         }
